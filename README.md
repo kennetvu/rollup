@@ -1,4 +1,4 @@
-# Rollup
+# Rollup!
 
 <p align="center">
   <a href="https://travis-ci.org/rollup/rollup">
