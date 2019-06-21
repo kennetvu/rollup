@@ -100,14 +100,18 @@ export default function system(
 	const importBindings: string[] = [];
 	let starExcludes: Set<string> | undefined;
 	const setters: string[] = [];
-
-	dependencies.forEach(({ imports, reexports }) => {
+	dependencies.forEach(({ imports, reexports, namedExportsMode }) => {
 		const setter: string[] = [];
 		if (imports) {
 			imports.forEach(specifier => {
 				importBindings.push(specifier.local);
 				if (specifier.imported === '*') {
 					setter.push(`${specifier.local}${_}=${_}module;`);
+				} else if (namedExportsMode && specifier.imported !== 'default') {
+					// useState = module.default && 'useState' in module.default ? module.default.useState : module.useState;
+					setter.push(
+						`${specifier.local}${_}=${_}module.default && '${specifier.imported}' in module.default ? module.default.${specifier.imported} : module.${specifier.imported};`
+					);
 				} else {
 					setter.push(`${specifier.local}${_}=${_}module.${specifier.imported};`);
 				}
